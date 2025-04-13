@@ -1,4 +1,7 @@
 import React, { useState, useEffect } from "react";
+import {  FaMoon } from "react-icons/fa"; // 🌞🌙 Icons imported here
+import { FaSun } from "react-icons/fa6";
+
 import "./index.css";
 
 function App() {
@@ -54,7 +57,6 @@ function App() {
     }
   };
 
-  // ✅ Fixed: Now includes `title` in PATCH request
   const toggleComplete = async (task) => {
     try {
       const response = await fetch(`${API_URL}${task.id}/`, {
@@ -122,7 +124,15 @@ function App() {
       <header className="app-header">
         <div className="logo">Mat</div>
         <button className="theme-toggle-button" onClick={toggleTheme}>
-          {darkMode ? "Light Mode" : "Dark Mode"}
+          {darkMode ? (
+            <>
+              <FaSun style={{ marginRight: "8px", color: "#ffd900" }} /> Light Mode
+            </>
+          ) : (
+            <>
+              <FaMoon style={{ marginRight: "8px", color: "#0069d2" }} /> Dark Mode
+            </>
+          )}
         </button>
       </header>
 
@@ -142,7 +152,6 @@ function App() {
             <button onClick={addTask}>Add Task</button>
           </div>
 
-          {/* Filter Buttons */}
           <div className="filters">
             {["View All", "active", "completed"].map(type => (
               <button
@@ -156,12 +165,10 @@ function App() {
           </div>
 
           <ul className="task-list">
-            {/* Display message if no active tasks */}
             {filter === "active" && filteredTasks.length === 0 && (
               <p className="no-tasks-message">No active tasks</p>
             )}
 
-            {/* Display tasks */}
             {filteredTasks.map((task) => (
               <li key={task.id} className={task.completed ? "completed" : ""}>
                 {task.isEditing ? (
@@ -199,7 +206,6 @@ function App() {
             ))}
           </ul>
 
-          {/* Status Messages */}
           {deleteMessage && <p className="status-message">{deleteMessage}</p>}
           {editMessage && <p className="status-message">{editMessage}</p>}
           {completionMessage && <p className="completion-message">{completionMessage}</p>}
