@@ -7,8 +7,8 @@ function App() {
   const [newTask, setNewTask] = useState("");
   const [filter, setFilter] = useState("all");
   const [completionMessage, setCompletionMessage] = useState();
-  const [deleteMessage, setDeleteMessage] = useState(""); // New state for delete message
-  const [editMessage, setEditMessage] = useState(""); // New state for edit message
+  const [deleteMessage, setDeleteMessage] = useState("");
+  const [editMessage, setEditMessage] = useState("");
 
   const API_URL = "https://fastapi-todolist-backend.onrender.com/api/todos/";
 
@@ -54,12 +54,16 @@ function App() {
     }
   };
 
-  const toggleComplete = async (id, completed) => {
+  // ✅ Fixed: Now includes `title` in PATCH request
+  const toggleComplete = async (task) => {
     try {
-      const response = await fetch(`${API_URL}${id}/`, {
+      const response = await fetch(`${API_URL}${task.id}/`, {
         method: "PATCH",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ completed: !completed }),
+        body: JSON.stringify({
+          title: task.title,
+          completed: !task.completed,
+        }),
       });
       if (response.ok) {
         fetchTasks();
@@ -77,7 +81,7 @@ function App() {
       if (response.ok) {
         fetchTasks();
         setDeleteMessage("Task deleted successfully!");
-        setTimeout(() => setDeleteMessage(""), 2000); // Clear the message after 2 seconds
+        setTimeout(() => setDeleteMessage(""), 2000);
       }
     } catch (error) {
       console.error("Error deleting task:", error);
@@ -98,7 +102,7 @@ function App() {
       if (response.ok) {
         fetchTasks();
         setEditMessage("Task saved successfully!");
-        setTimeout(() => setEditMessage(""), 2000); // Clear the message after 2 seconds
+        setTimeout(() => setEditMessage(""), 2000);
       }
     } catch (error) {
       console.error("Error updating task:", error);
@@ -140,7 +144,7 @@ function App() {
 
           {/* Filter Buttons */}
           <div className="filters">
-            {["all", "active", "completed"].map(type => (
+            {["View All", "active", "completed"].map(type => (
               <button
                 key={type}
                 onClick={() => handleFilterChange(type)}
@@ -181,9 +185,9 @@ function App() {
                   </div>
                 ) : (
                   <>
-                    <span onClick={() => toggleComplete(task.id, task.completed)}>{task.title}</span>
+                    <span onClick={() => toggleComplete(task)}>{task.title}</span>
                     <div className="task-buttons">
-                      <button onClick={() => toggleComplete(task.id, task.completed)}>
+                      <button onClick={() => toggleComplete(task)}>
                         {task.completed ? "Uncomplete" : "Complete"}
                       </button>
                       <button onClick={() => startEditing(task.id)}>Edit</button>
@@ -204,7 +208,7 @@ function App() {
 
       <footer className="app-footer">
         <div className="footer-left">
-          <p>by Matheo Jay U. Fabre</p>
+          <p>by Matheo Jay Fabre</p>
         </div>
       </footer>
     </div>
